@@ -1,0 +1,47 @@
+{% set name = "falcon-apispec" %}
+{% set version = "0.1.0" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 24f8bd6d1cbe86cc5ac7f7a7262476e1f40d59fab7213a64f5172dbcb034c9a3
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed --no-cache-dir -vvv"
+
+requirements:
+  host:
+    - python >=3.5
+    - pip
+  run:
+    - python >=3.5
+    - pyyaml >=3.10
+    - apispec >=1.0.0b1
+    - falcon
+
+test:
+  imports:
+    - falcon_apispec
+
+about:
+  home: https://github.com/alysivji/falcon-apispec
+  license: MIT
+  license_family: MIT
+  # requested inclusion of license file in distribution https://github.com/alysivji/falcon-apispec/pull/7
+  license_file: '{{ environ["RECIPE_DIR"] }}/LICENSE'
+  summary: 'Falcon plugin for apispec documentation generator.'
+  description: |
+    [apispec](https://github.com/marshmallow-code/apispec) plugin that
+    generates OpenAPI specification (aka Swagger) for
+    [Falcon](https://falconframework.org/) web applications.
+  doc_url: https://github.com/alysivji/falcon-apispec
+  dev_url: https://github.com/alysivji/falcon-apispec
+
+extra:
+  recipe-maintainers:
+    - carlodri
