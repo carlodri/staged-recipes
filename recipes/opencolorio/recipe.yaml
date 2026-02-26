@@ -49,7 +49,9 @@ outputs:
               - test -f "$PREFIX"/include/OpenColorIO/OpenColorIO.h
               - test ! -f "$PREFIX"/bin/ociocheck
             else:
-              - if not exist %LIBRARY_BIN%\\OpenColorIO.dll exit 1
+              # Windows artifact name includes ABI major/minor when OCIO_USE_SOVERSION=ON
+              # (e.g. OpenColorIO_2_5.dll), so do not hardcode unsuffixed dll name.
+              - if not exist %LIBRARY_BIN%\\OpenColorIO*.dll exit 1
               - if not exist %LIBRARY_INC%\\OpenColorIO\\OpenColorIO.h exit 1
               - if exist %LIBRARY_BIN%\\ociocheck.exe exit 1
 
