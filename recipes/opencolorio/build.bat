@@ -38,8 +38,13 @@ rem time via find_python_package(REQUIRED), but neither is on conda-forge and ne
 rem is actually used (--target install never triggers the docs ALL/Sphinx target).
 rem Stub both packages so cmake configure passes; the stubs are never imported.
 set "OCIO_BUILD_DOCS=OFF"
+set "CMAKE_PYTHON_HINTS="
 if "%OCIO_BUILD_PYTHON%"=="ON" (
     set "OCIO_BUILD_DOCS=ON"
+    rem Force CMake to use the host-prefix Python (PYTHON) for all Python checks.
+    rem In conda/rattler builds, CMake runs from the build prefix and may otherwise
+    rem auto-select a different Python than the one we are building PyOpenColorIO for.
+    set "CMAKE_PYTHON_HINTS=-DPython_EXECUTABLE=%PYTHON% -DPython3_EXECUTABLE=%PYTHON%"
     rem Stubs go FIRST so they shadow any installed-but-broken packages (e.g. sphinx-tabs
     rem fails to import against newer Sphinx despite being installed).
     md _sphinx_stubs\sphinx_press_theme 2>nul
@@ -62,6 +67,7 @@ cmake ^
     -DBUILD_SHARED_LIBS=ON ^
     -DOCIO_BUILD_APPS=%OCIO_BUILD_APPS% ^
     -DOCIO_BUILD_PYTHON=%OCIO_BUILD_PYTHON% ^
+    %CMAKE_PYTHON_HINTS% ^
     -DOCIO_BUILD_OPENFX=OFF ^
     -DOCIO_BUILD_JAVA=OFF ^
     -DOCIO_BUILD_TESTS=OFF ^

@@ -89,7 +89,14 @@ fi
 # is actually used (--target install never triggers the docs ALL/Sphinx target).
 # Stub both packages so cmake configure passes; the stubs are never imported.
 if [[ "${OCIO_BUILD_PYTHON:-OFF}" == "ON" ]]; then
-    cmake_args+=("-DOCIO_BUILD_DOCS=ON")
+    cmake_args+=(
+        "-DOCIO_BUILD_DOCS=ON"
+        # Force CMake to use the host-prefix Python (PYTHON) for all Python checks.
+        # In conda/rattler builds, CMake runs from the build prefix and may otherwise
+        # auto-select a different Python than the one we are building PyOpenColorIO for.
+        "-DPython_EXECUTABLE=${PYTHON}"
+        "-DPython3_EXECUTABLE=${PYTHON}"
+    )
     # Stubs go FIRST so they shadow any installed-but-broken packages (e.g. sphinx-tabs
     # fails to import against newer Sphinx despite being installed).
     mkdir -p _sphinx_stubs/sphinx_press_theme _sphinx_stubs/testresources _sphinx_stubs/sphinx_tabs
