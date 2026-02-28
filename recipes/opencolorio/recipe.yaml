@@ -83,13 +83,16 @@ outputs:
         # OpenGL support for GPU-accelerated tools and ociodisplay.
         # OCIO's CheckSupportGL.cmake requires OpenGL + GLUT on all platforms.
         # It also requires GLEW on non-Apple platforms.
+        # On macOS, GLUT is expected from the system framework (not a conda freeglut package).
         # If any required GL dependency is missing, OCIO_GL_ENABLED is OFF and
         # ociodisplay / GPU code paths are skipped at build time.
         # With OCIO_USE_HEADLESS=ON it additionally needs EGL (found via GLVND) on Linux for headless gpu usage.
         # mesalib provides the Mesa software EGL/GL implementation for headless rendering.
-        - freeglut >=3.2.1      # CheckSupportGL.cmake: find_package(GLUT 3.2.1 REQUIRED)
         - if: linux or win
-          then: glew >=2.1.0    # CheckSupportGL.cmake: find_package(GLEW 2.1.0 REQUIRED)
+          then:
+            # TODO: Freeglut not available on macOS for condaForge right now, add when possible
+            - freeglut >=3.2.1  # CheckSupportGL.cmake: find_package(GLUT 3.2.1 REQUIRED)
+            - glew >=2.1.0      # CheckSupportGL.cmake: find_package(GLEW 2.1.0 REQUIRED)
         - if: linux
           then:
             - libgl-devel       # GL + GLVND headers/cmake; find_package(OpenGL COMPONENTS OpenGL)
@@ -98,9 +101,10 @@ outputs:
             - mesalib           # Mesa software EGL/GL renderer (headless runtime)
       run:
         - ${{ pin_subpackage('opencolorio', exact=True) }}
-        - freeglut
         - if: linux or win
-          then: glew
+          then:
+            - freeglut
+            - glew
         - if: linux
           then:
             - mesalib
