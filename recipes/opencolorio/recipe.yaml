@@ -211,3 +211,4 @@ extra:
   feedstock-name: opencolorio-split
   recipe-maintainers:
     - carlodri
+    - ndeybach
