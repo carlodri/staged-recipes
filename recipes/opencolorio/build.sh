@@ -12,11 +12,6 @@ cd build
 # following note at https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 if [[ "${target_platform}" == osx-* ]]; then
     export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-
-    # minizip on conda-forge currently provides libminizip.dylib on macOS.
-    # Normalize hidden-link flags so the linker does not look for libminizip-ng.
-    export LDFLAGS="${LDFLAGS:-}"
-    LDFLAGS="${LDFLAGS//-Wl,-hidden-lminizip-ng/-Wl,-hidden-lminizip}"
 fi
 
 

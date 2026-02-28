@@ -8,6 +8,8 @@ recipe:
 source:
   - url: https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/download/v${{ version }}/OpenColorIO-${{ version }}.tar.gz
     sha256: 49ab04d023d7a7a7237e24f2cfead3171b0ff7f466ce20e6e32859ec8c7cc94b
+    patches:
+      - fix-macos-minizip-hidden-link.patch
 
 build:
   number: 0
