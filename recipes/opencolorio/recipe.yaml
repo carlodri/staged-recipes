@@ -79,22 +79,27 @@ outputs:
         - expat >=2.6.0
         - zlib >=1.2.13
         - lcms2 >=2.2
-        - openexr
-        # OpenGL support for GPU-accelerated tools (ociolutimage --gpu, ocioconvert --gpu).
-        # OCIO's CheckSupportGL.cmake requires all three of OpenGL + GLEW + GLUT for
-        # OCIO_GL_ENABLED; if any one is missing GPU support is disabled entirely.
-        # With OCIO_USE_HEADLESS=ON it additionally needs EGL (found via GLVND) on Linux.
+        # OpenGL support for GPU-accelerated tools and ociodisplay.
+        # OCIO's CheckSupportGL.cmake requires OpenGL + GLUT on all platforms.
+        # It also requires GLEW on non-Apple platforms.
+        # If any required GL dependency is missing, OCIO_GL_ENABLED is OFF and
+        # ociodisplay / GPU code paths are skipped at build time.
+        # With OCIO_USE_HEADLESS=ON it additionally needs EGL (found via GLVND) on Linux for headless gpu usage.
         # mesalib provides the Mesa software EGL/GL implementation for headless rendering.
+        - freeglut >=3.2.1      # CheckSupportGL.cmake: find_package(GLUT 3.2.1 REQUIRED)
+        - if: linux or win
+          then: glew >=2.1.0    # CheckSupportGL.cmake: find_package(GLEW 2.1.0 REQUIRED)
         - if: linux
           then:
             - libgl-devel       # GL + GLVND headers/cmake; find_package(OpenGL COMPONENTS OpenGL)
             - libopengl-devel   # libOpenGL.so symlink → creates OpenGL::OpenGL cmake target
             - libegl-devel      # EGL headers/cmake; find_package(OpenGL COMPONENTS EGL)
-            - glew >=2.1.0      # CheckSupportGL.cmake: find_package(GLEW 2.1.0 REQUIRED)
-            - freeglut >=3.2.1  # CheckSupportGL.cmake: find_package(GLUT 3.2.1 REQUIRED)
             - mesalib           # Mesa software EGL/GL renderer (headless runtime)
       run:
         - ${{ pin_subpackage('opencolorio', exact=True) }}
+        - freeglut
+        - if: linux or win
+          then: glew
         - if: linux
           then:
             - mesalib
@@ -116,6 +121,7 @@ outputs:
               - _h ociowrite --help
               - _h ocioconvert --help
               - _h ociolutimage --help
+              - _h ociodisplay --help
               # Verify OpenGL support was compiled into GPU-capable tools.
               # ociochecklut --gpu exits 1 in two cases:
               #   (a) "Compiled without OpenGL support" -> bad build, fail
@@ -142,6 +148,7 @@ outputs:
               - if not exist %LIBRARY_BIN%\\ociowrite.exe exit 1
               - if not exist %LIBRARY_BIN%\\ocioconvert.exe exit 1
               - if not exist %LIBRARY_BIN%\\ociolutimage.exe exit 1
+              - if not exist %LIBRARY_BIN%\\ociodisplay.exe exit 1
 
   - package:
       name: pyopencolorio
