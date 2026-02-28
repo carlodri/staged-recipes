@@ -79,6 +79,7 @@ outputs:
         - expat >=2.6.0
         - zlib >=1.2.13
         - lcms2 >=2.2
+        - openexr >=3.2.0
         # OpenGL support for GPU-accelerated tools and ociodisplay.
         # OCIO's CheckSupportGL.cmake requires OpenGL + GLUT on all platforms.
         # It also requires GLEW on non-Apple platforms.
