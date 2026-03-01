@@ -41,10 +41,13 @@ set "OCIO_BUILD_DOCS=OFF"
 set "CMAKE_PYTHON_HINTS="
 if "%OCIO_BUILD_PYTHON%"=="ON" (
     set "OCIO_BUILD_DOCS=ON"
-    rem Force CMake to use the host-prefix Python (PYTHON) for all Python checks.
+    rem 1) Force CMake to use the host-prefix Python (PYTHON) for all Python checks.
     rem In conda/rattler builds, CMake runs from the build prefix and may otherwise
     rem auto-select a different Python than the one we are building PyOpenColorIO for.
-    set "CMAKE_PYTHON_HINTS=-DPython_EXECUTABLE=%PYTHON% -DPython3_EXECUTABLE=%PYTHON%"
+    rem 2) Also force Python install destination to the active Windows site-packages.
+    rem OCIO defaults to CMAKE_INSTALL_LIBDIR/site-packages on WIN32, which is wrong
+    rem when CMAKE_INSTALL_PREFIX is set to %LIBRARY_PREFIX% for C/C++ outputs.
+    set "CMAKE_PYTHON_HINTS=-DPython_EXECUTABLE=%PYTHON% -DPython3_EXECUTABLE=%PYTHON% -DPYTHON_VARIANT_PATH=%PREFIX%\Lib\site-packages"
     rem Stubs go FIRST so they shadow any installed-but-broken packages (e.g. sphinx-tabs
     rem fails to import against newer Sphinx despite being installed).
     md _sphinx_stubs\sphinx_press_theme 2>nul
