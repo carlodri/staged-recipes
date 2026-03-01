@@ -60,8 +60,8 @@ if "%OCIO_BUILD_PYTHON%"=="ON" (
     )
 )
 
+rem On Windows, use the generator selected by the activated toolchain (no Ninja as it fails)
 cmake ^
-    -GNinja ^
     -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DBUILD_SHARED_LIBS=ON ^
